@@ -41,25 +41,30 @@ class GetAnimeList extends Command
 
                 if (isset($response['data'])) {
                     foreach ($response['data'] as $anime) {
+//                        dd($anime);
                         Anime::updateOrCreate(
                             [
                                 'anime_id' => $anime['id'], // Unique identifier
                             ],
                             [
+                                'episode_count' => $anime['series_metadata']['episode_count'] ??  null,
+                                'season_count' => $anime['series_metadata']['season_count'] ??  null,
+                                'series_launch_year' => $anime['series_metadata']['series_launch_year'],
+                                'is_mature' => $anime['series_metadata']['is_mature'] ??  null,
+                                'rating_total' => $anime['rating']['total'] ??  null,
+                                'rating_average' => $anime['rating']['average'] ??  null,
+                                'rating_unit' => 'K',
                                 'external_id' => $anime['external_id'] ?? null,
                                 'images' => isset($anime['images']) ? json_encode($anime['images']) : null,
                                 'slug_title' => $anime['slug_title'] ?? null,
                                 'linked_resource_key' => $anime['linked_resource_key'] ?? null,
                                 'channel_id' => $anime['channel_id'] ?? null,
-                                'promo_description' => $anime['promo_description'] ?? null,
                                 'description' => $anime['description'] ?? null,
                                 'is_new' => $anime['new'] ?? false,
                                 'series_metadata' => isset($anime['series_metadata']) ? json_encode($anime['series_metadata']) : null,
                                 'rating' => isset($anime['rating']) ? json_encode($anime['rating']) : null,
                                 'type' => $anime['type'] ?? 'series',
-                                'promo_title' => $anime['promo_title'] ?? null,
-                                'last_public' => isset($anime['last_public']) ? date('Y-m-d H:i:s', strtotime($anime['last_public'])) : null,
-                                'slug' => $anime['slug'] ?? null,
+                                'last_public' => $this->validateDate($anime['last_public']) ? date('Y-m-d H:i:s', strtotime($anime['last_public'])) : null,
                                 'title' => $anime['title'] ?? null,
                             ]
                         );
@@ -75,6 +80,16 @@ class GetAnimeList extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    private function validateDate(?string $date): bool
+    {
+        if (!$date) {
+            return false;
+        }
+
+        $d = \DateTime::createFromFormat(DATE_ATOM, $date);
+        return $d !== false;
     }
 
 

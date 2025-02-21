@@ -16,19 +16,23 @@ return new class extends Migration
             $table->string('anime_id')->unique()->nullable(); // Maps to the provided "id" field
             $table->string('external_id')->nullable();
             $table->json('images')->nullable()->nullable(); // Stores poster_tall and poster_wide
+            $table->string('title')->nullable();
+            $table->integer('episode_count')->default(0);
+            $table->integer('season_count')->default(0);
+            $table->integer('series_launch_year')->default(0);
+            $table->boolean('is_mature')->default(false);
+            $table->integer('rating_total')->default(0);
+            $table->decimal('rating_average', 3, 1)->nullable();
+            $table->string('rating_unit')->nullable();
             $table->string('slug_title')->nullable();
             $table->string('linked_resource_key')->nullable();
             $table->string('channel_id')->nullable();
-            $table->text('promo_description')->nullable();
             $table->longText('description')->nullable();
             $table->boolean('is_new')->default(false);
             $table->json('series_metadata')->nullable(); // Stores series-related metadata
             $table->json('rating')->nullable(); // Stores rating details
             $table->string('type')->default('series');
-            $table->string('promo_title')->nullable();
             $table->timestamp('last_public')->nullable();
-            $table->string('slug')->nullable();
-            $table->string('title')->nullable();
             $table->timestamps();
         });
     }
